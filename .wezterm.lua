@@ -1,5 +1,6 @@
 -- Pull in the wezterm API
 local wezterm = require 'wezterm'
+local action = wezterm.action
 
 -- This table will hold the configuration.
 local config = {}
@@ -22,7 +23,7 @@ config.scrollback_lines = 10000
 config.scroll_to_bottom_on_input = true
 config.show_update_window = true
 config.use_fancy_tab_bar = false
-config.hide_tab_bar_if_only_one_tab = true
+config.hide_tab_bar_if_only_one_tab = false
 config.tab_max_width = 30
 config.disable_default_key_bindings = true
 config.disable_default_mouse_bindings = false
@@ -30,23 +31,6 @@ config.force_reverse_video_cursor = true
 config.hide_mouse_cursor_when_typing = true
 config.window_close_confirmation = 'AlwaysPrompt'
 config.window_decorations = "RESIZE"
-
-config.keys = {
-	{ action = wezterm.action.ActivateCommandPalette		, mods = 'CTRL|SHIFT', key =     'P' },
-	{ action = wezterm.action.CopyTo    'Clipboard' 		, mods = 'CTRL|SHIFT', key =     'C' },
-	{ action = wezterm.action.DecreaseFontSize      		, mods =       'CTRL', key =     '-' },
-	{ action = wezterm.action.IncreaseFontSize      		, mods =       'CTRL', key =     '=' },
-	{ action = wezterm.action.Nop                   		, mods =        'ALT', key = 'Enter' },
-	{ action = wezterm.action.PasteFrom 'Clipboard' 		, mods = 'CTRL|SHIFT', key =     'V' },
-	{ action = wezterm.action.ResetFontSize         		, mods =       'CTRL', key =     '0' },
-	{ action = wezterm.action.ActivateCopyMode         	, mods = 'CTRL|SHIFT', key =     'X' },
-	{ action = wezterm.action.TogglePaneZoomState         , mods = 'CTRL|SHIFT', key =     'Z' },
-	{ action = wezterm.action.ToggleFullScreen      		,                      key =   'F11' },
-	{ action = wezterm.action.SpawnTab "CurrentPaneDomain", mods = 'CTRL|SHIFT', key =	   'T' },
-	{ action = wezterm.action.CloseCurrentTab{confirm=true}, mods = 'CTRL|SHIFT', key =	   'W' },
-	{ action = wezterm.action.SplitHorizontal {domain="CurrentPaneDomain"}, mods = 'CTRL|SHIFT', key =	   '|' },
-	{ action = wezterm.action.SplitVertical {domain="CurrentPaneDomain"}, mods = 'CTRL|SHIFT', key =	   '_' },
-}
 
 config.colors = {
 	tab_bar = {
@@ -100,6 +84,46 @@ config.colors = {
 			italic = true,
 		},
 	},
+}
+
+config.launch_menu = {
+	{
+		label = 'Neovim Config',
+		args = { 'nvim' },
+		cwd = "C:\\Users\\Dilip Chauhan\\AppData\\Local\\nvim"
+	},
+}
+
+config.ssh_domains = {
+	{
+		-- This name identifies the domain
+		name = 'MTAcct',
+		-- The hostname or address to connect to. Will be used to match settings
+		-- from your ssh config file
+		remote_address = '10.9.0.4',
+		-- The username to use on the remote host
+		username = 'mfg',
+	},
+}
+
+config.keys = {
+	{ action = action.ActivateCommandPalette		, mods = 'CTRL|SHIFT', key =     'P' },
+	{ action = action.CopyTo    'Clipboard' 		, mods = 'CTRL|SHIFT', key =     'C' },
+	{ action = action.DecreaseFontSize      		, mods =       'CTRL', key =     '-' },
+	{ action = action.IncreaseFontSize      		, mods =       'CTRL', key =     '=' },
+	{ action = action.Nop                   		, mods =        'ALT', key = 'Enter' },
+	{ action = action.PasteFrom 'Clipboard' 		, mods = 'CTRL|SHIFT', key =     'V' },
+	{ action = action.ResetFontSize         		, mods =       'CTRL', key =     '0' },
+	{ action = action.ActivateCopyMode         	, mods = 'CTRL|SHIFT', key =     'X' },
+	{ action = action.TogglePaneZoomState         , mods = 'CTRL|SHIFT', key =     'Z' },
+	{ action = action.ToggleFullScreen      		,                      key =   'F11' },
+	{ action = action.SpawnTab "CurrentPaneDomain", mods = 'CTRL|SHIFT', key =	   'T' },
+	{ action = action.CloseCurrentTab{confirm=true}, mods = 'CTRL|SHIFT', key =	   'W' },
+	{ action = action.ShowLauncher						, mods =			'CTRL', key =		'x' },
+	{ action = action.SplitHorizontal {domain="CurrentPaneDomain"}, mods = 'CTRL|SHIFT', key =	'|' },
+	{ action = action.SplitVertical {domain="CurrentPaneDomain"}, mods = 'CTRL|SHIFT', key =	'_' },
+	{ action = action.ActivateTabRelative(-1)		, mods =			'CTRL', key = 'Tab' },
+	{ action = action.ActivateTabRelative(1)		, mods =			'CTRL|SHIFT', key = 'Tab' },
 }
 
 -- and finally, return the configuration to wezterm
