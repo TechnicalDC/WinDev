@@ -29,7 +29,7 @@ config.disable_default_mouse_bindings = false
 config.force_reverse_video_cursor = true
 config.hide_mouse_cursor_when_typing = true
 config.window_close_confirmation = 'AlwaysPrompt'
-config.window_decorations = "TITLE | RESIZE"
+config.window_decorations = "RESIZE"
 
 config.keys = {
 	{ action = wezterm.action.ActivateCommandPalette		, mods = 'CTRL|SHIFT', key =     'P' },
