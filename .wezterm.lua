@@ -1,9 +1,48 @@
+---@diagnostic disable: unused-local
 -- Pull in the wezterm API
 local wezterm = require 'wezterm'
 local action = wezterm.action
+local mux = wezterm.mux
+
+wezterm.on('gui-startup', function()
+	local tab, pane, window = mux.spawn_window({})
+	window:gui_window():maximize()
+end)
+
+-- This function returns the suggested title for a tab.
+-- It prefers the title that was set via `tab:set_title()`
+-- or `wezterm cli set-tab-title`, but falls back to the
+-- title of the active pane in that tab.
+local function tab_title(tab_info)
+	local title = tab_info.tab_title
+	-- if the tab title is explicitly set, take that
+	if title and #title > 0 then
+		return title
+	end
+	-- Otherwise, use the title from the active pane
+	-- in that tab
+	return tab_info.active_pane.title
+end
+
+wezterm.on( 'format-tab-title', function(tab, tabs, panes, config, hover, max_width)
+	local title = tab_title(tab)
+	return ' ' .. title .. ' '
+end)
+
+-- wezterm.on('update-right-status', function(window, pane)
+-- 	local date = wezterm.strftime '%Y-%m-%d %H:%M:%S'
+--
+-- 	-- Make it italic and underlined
+-- 	window:set_right_status(wezterm.format {
+-- 		{ Attribute = { Underline = 'Single' } },
+-- 		{ Attribute = { Italic = false } },
+-- 		{ Text = 'Hello ' .. date },
+-- 	})
+-- end)
 
 -- This table will hold the configuration.
 local config = {}
+local resize_step = 5
 
 -- In newer versions of wezterm, use the config_builder which will
 -- help provide clearer error messages
@@ -13,11 +52,10 @@ end
 
 config.default_prog = { 'powershell.exe' }
 config.default_cwd = 'C:\\Users\\Dilip Chauhan\\Desktop\\WORK\\'
--- This is where you actually apply your config choices
 
--- For example, changing the color scheme:
 config.font = wezterm.font 'Iosevka NF'
 config.font_size = 10
+config.line_height = 1.1
 config.color_scheme = 'OneDark (base16)'
 config.scrollback_lines = 10000
 config.scroll_to_bottom_on_input = true
@@ -27,18 +65,30 @@ config.hide_tab_bar_if_only_one_tab = false
 config.tab_max_width = 30
 config.disable_default_key_bindings = true
 config.disable_default_mouse_bindings = false
+config.adjust_window_size_when_changing_font_size = false
 config.force_reverse_video_cursor = true
 config.hide_mouse_cursor_when_typing = true
 config.window_close_confirmation = 'AlwaysPrompt'
 config.window_decorations = "RESIZE"
+config.show_tab_index_in_tab_bar = true
+config.switch_to_last_active_tab_when_closing_tab = true
+config.hyperlink_rules = wezterm.default_hyperlink_rules()
+config.skip_close_confirmation_for_processes_named = {
+	'bash',
+	'sh',
+	'zsh',
+	'fish',
+	'tmux',
+	'nu',
+	'cmd.exe',
+	'pwsh.exe',
+	'powershell.exe',
+}
 
 config.colors = {
 	tab_bar = {
-		-- The color of the strip that goes along the top of the window
-		-- (does not apply when fancy tab bar is in use)
 		background = '#21252b',
 
-		-- The active tab is the one that has focus in the window
 		active_tab = {
 			bg_color = '#98c379',
 			fg_color = '#21252b',
@@ -56,28 +106,22 @@ config.colors = {
 			strikethrough = false,
 		},
 
-		-- Inactive tabs are the tabs that do not have focus
 		inactive_tab = {
 			bg_color = '#282c34',
 			fg_color = '#808080',
 		},
 
-		-- You can configure some alternate styling when the mouse pointer
-		-- moves over inactive tabs
 		inactive_tab_hover = {
 			bg_color = '#3b3f4c',
 			fg_color = '#909090',
 			italic = false,
 		},
 
-		-- The new tab button that let you create new tabs
 		new_tab = {
 			bg_color = '#21252b',
 			fg_color = '#808080',
 		},
 
-		-- You can configure some alternate styling when the mouse pointer
-		-- moves over the new tab button
 		new_tab_hover = {
 			bg_color = '#3b3f4c',
 			fg_color = '#909090',
@@ -98,11 +142,11 @@ config.ssh_domains = {
 	{
 		-- This name identifies the domain
 		name = 'MTAcct',
-		-- The hostname or address to connect to. Will be used to match settings
-		-- from your ssh config file
 		remote_address = '10.9.0.4',
-		-- The username to use on the remote host
 		username = 'mfg',
+		ssh_option = {
+			identityfile = 'C:\\Users\\Dilip Chauhan\\.ssh\\id_rsa.pub',
+		},
 	},
 }
 
@@ -119,11 +163,18 @@ config.keys = {
 	{ action = action.ToggleFullScreen      		,                      key =   'F11' },
 	{ action = action.SpawnTab "CurrentPaneDomain", mods = 'CTRL|SHIFT', key =	   'T' },
 	{ action = action.CloseCurrentTab{confirm=true}, mods = 'CTRL|SHIFT', key =	   'W' },
-	{ action = action.ShowLauncher						, mods =			'CTRL', key =		'x' },
+	{ action = action.CloseCurrentPane{confirm=true}, mods = 'CTRL|SHIFT', key =	   'Q' },
+	{ action = action.ShowLauncher						, mods =			'CTRL|ALT', key =		'x' },
 	{ action = action.SplitHorizontal {domain="CurrentPaneDomain"}, mods = 'CTRL|SHIFT', key =	'|' },
 	{ action = action.SplitVertical {domain="CurrentPaneDomain"}, mods = 'CTRL|SHIFT', key =	'_' },
-	{ action = action.ActivateTabRelative(-1)		, mods =			'CTRL', key = 'Tab' },
-	{ action = action.ActivateTabRelative(1)		, mods =			'CTRL|SHIFT', key = 'Tab' },
+	{ action = action.ActivateTabRelative(1)		, mods =			'CTRL', key = 'Tab' },
+	{ action = action.ActivateTabRelative(-1)		, mods =			'CTRL|SHIFT', key = 'Tab' },
+	-- { action = action.QuickSelect						, mods =			'CTRL|SHIFT', key = 'Space' },
+	-- { action = action.ActivateCommandPalette		, mods =			'CTRL|SHIFT', key = ':' }
+	{ action = action.AdjustPaneSize { 'Left', resize_step }	, mods =			'CTRL|ALT', key =		'h' },
+	{ action = action.AdjustPaneSize { 'Right', resize_step } , mods =		'CTRL|ALT', key =		'l' },
+	{ action = action.AdjustPaneSize { 'Down', resize_step }	, mods =			'CTRL|ALT', key =		'j' },
+	{ action = action.AdjustPaneSize { 'Up', resize_step }	, mods =			'CTRL|ALT', key =		'k' },
 }
 
 -- and finally, return the configuration to wezterm
