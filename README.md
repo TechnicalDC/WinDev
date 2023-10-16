@@ -1,4 +1,12 @@
 # WinDev
 My dev setup for windows
 
+## Tools I use
+
+- [Neovim](https://neovim.io/): Hyperextensible Vim-based text editor
+- [Wezterm](https://wezfurlong.org/wezterm/index.html): Powerful cross-platform terminal emulator and multiplexer written in Rust
+- [Fzf](https://github.com/junegunn/fzf): General-purpose command-line fuzzy finder
+- [Starship](https://starship.rs/): Cross platform shell prompt written in rust
+
+## Screenshot
 ![wezterm](https://github.com/TechnicalDC/WinDev/blob/main/images/2023-10-16_18-43.png)
