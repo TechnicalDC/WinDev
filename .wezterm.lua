@@ -3,6 +3,35 @@
 local wezterm = require 'wezterm'
 local action = wezterm.action
 local mux = wezterm.mux
+local resize_step = 5
+local colors = {
+	black = "#181a1f",
+	bg0 = "#282c34",
+	bg1 = "#31353f",
+	bg2 = "#393f4a",
+	bg3 = "#3b3f4c",
+	bg_d = "#21252b",
+	bg_blue = "#73b8f1",
+	bg_yellow = "#ebd09c",
+	fg = "#abb2bf",
+	purple = "#c678dd",
+	green = "#98c379",
+	orange = "#d19a66",
+	blue = "#61afef",
+	yellow = "#e5c07b",
+	cyan = "#56b6c2",
+	red = "#e86671",
+	grey = "#5c6370",
+	light_grey = "#848b98",
+	dark_cyan = "#2b6f77",
+	dark_red = "#993939",
+	dark_yellow = "#93691d",
+	dark_purple = "#8a3fa0",
+	diff_add = "#31392b",
+	diff_delete = "#382b2c",
+	diff_change = "#1c3448",
+	diff_text = "#2c5372",
+}
 
 wezterm.on('gui-startup', function()
 	local tab, pane, window = mux.spawn_window({})
@@ -29,20 +58,31 @@ wezterm.on( 'format-tab-title', function(tab, tabs, panes, config, hover, max_wi
 	return ' ' .. title .. ' '
 end)
 
--- wezterm.on('update-right-status', function(window, pane)
--- 	local date = wezterm.strftime '%Y-%m-%d %H:%M:%S'
---
--- 	-- Make it italic and underlined
--- 	window:set_right_status(wezterm.format {
--- 		{ Attribute = { Underline = 'Single' } },
--- 		{ Attribute = { Italic = false } },
--- 		{ Text = 'Hello ' .. date },
--- 	})
--- end)
+wezterm.on('update-right-status', function(window, pane)
+	local time = wezterm.strftime("%H:%M:%S")
+	local stat = window:active_workspace()
+
+	-- Left status (left of the tab line)
+	window:set_left_status(wezterm.format({
+		{ Background = { Color = colors.blue } },
+		{ Foreground = { Color = colors.bg_d } },
+		{ Text = " " },
+		{ Text = " " .. stat },
+		{ Text = " " },
+		"ResetAttributes",
+	}))
+	-- Make it italic and underlined
+	window:set_right_status(wezterm.format {
+		{ Background = { Color = colors.blue } },
+		{ Foreground = { Color = colors.bg_d } },
+		{ Attribute = { Italic = false } },
+		{ Text = '  ' .. time .. ' ' },
+		"ResetAttributes",
+	})
+end)
 
 -- This table will hold the configuration.
 local config = {}
-local resize_step = 5
 
 -- In newer versions of wezterm, use the config_builder which will
 -- help provide clearer error messages
@@ -52,12 +92,16 @@ end
 
 config.default_prog = { 'powershell.exe' }
 config.default_cwd = 'C:\\Users\\Dilip Chauhan\\Desktop\\WORK\\'
+config.default_domain = "local"
+config.default_workspace = "default"
 
 config.font = wezterm.font 'Iosevka NF'
 config.font_size = 10
+config.default_cursor_style = 'SteadyBlock'
 config.line_height = 1.1
 config.color_scheme = 'OneDark (base16)'
 config.scrollback_lines = 10000
+config.detect_password_input = true
 config.scroll_to_bottom_on_input = true
 config.show_update_window = true
 config.use_fancy_tab_bar = false
@@ -73,6 +117,7 @@ config.window_decorations = "RESIZE"
 config.show_tab_index_in_tab_bar = true
 config.switch_to_last_active_tab_when_closing_tab = true
 config.hyperlink_rules = wezterm.default_hyperlink_rules()
+-- config.default_mux_server_domain = "local"
 config.skip_close_confirmation_for_processes_named = {
 	'bash',
 	'sh',
@@ -87,7 +132,7 @@ config.skip_close_confirmation_for_processes_named = {
 
 config.colors = {
 	tab_bar = {
-		background = '#21252b',
+		background = colors.bg_d,
 
 		active_tab = {
 			bg_color = '#98c379',
@@ -144,12 +189,13 @@ config.ssh_domains = {
 		name = 'MTAcct',
 		remote_address = '10.9.0.4',
 		username = 'mfg',
+		multiplexing = 'None',
+		assume_shell = 'Posix',
 		ssh_option = {
 			identityfile = 'C:\\Users\\Dilip Chauhan\\.ssh\\id_rsa.pub',
 		},
 	},
 }
-
 config.keys = {
 	{ action = action.ActivateCommandPalette		, mods = 'CTRL|SHIFT', key =     'P' },
 	{ action = action.CopyTo    'Clipboard' 		, mods = 'CTRL|SHIFT', key =     'C' },
@@ -176,6 +222,14 @@ config.keys = {
 	{ action = action.AdjustPaneSize { 'Down', resize_step }	, mods =			'CTRL|ALT', key =		'j' },
 	{ action = action.AdjustPaneSize { 'Up', resize_step }	, mods =			'CTRL|ALT', key =		'k' },
 }
+
+for i = 1, 9 do
+	table.insert(config.keys, {
+		key = tostring(i),
+		mods = "CTRL",
+		action = action.ActivateTab(i - 1)
+	})
+end
 
 -- and finally, return the configuration to wezterm
 return config
