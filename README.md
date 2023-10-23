@@ -1,4 +1,6 @@
 # WinDev
+![wezterm](https://github.com/TechnicalDC/WinDev/blob/main/images/2023-10-23_18-04.png)
+
 My dev setup for windows
 
 ## Tools I use
