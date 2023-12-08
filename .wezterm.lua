@@ -60,8 +60,11 @@ end
 wezterm.on( 'format-tab-title', function(tab, tabs, panes, config, hover, max_width)
 	local title_icon = {
 		cmd = '  ',
+		wezterm = '  ',
 		powershell = ' 󰨊 ',
+		starship = '  ',
 		vim = '  ',
+		zoxide = ' 󰘶 ',
 		ssh = ' 󰒋 '
 	}
 	local title_name = tab_title(tab)
@@ -144,15 +147,19 @@ config.default_cwd = 'C:\\Users\\Dilip Chauhan\\Desktop\\WORK\\'
 config.default_domain = "local"
 config.default_workspace = "default"
 
+-- config.font = wezterm.font 'VictorMono Nerd Font'
 config.font = wezterm.font 'Iosevka NF'
-config.font_size = 10
+config.font_size = 11
+-- config.underline_thickness = 3
+-- config.underline_position = -4
 config.default_cursor_style = 'SteadyBlock'
-config.line_height = 1.1
+config.line_height = 1.2
 config.color_scheme = 'OneDark (base16)'
 config.scrollback_lines = 10000
 config.detect_password_input = true
 config.scroll_to_bottom_on_input = true
 config.show_update_window = true
+config.quote_dropped_files = "WindowsAlwaysQuoted"
 config.use_fancy_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = false
 config.tab_max_width = 30
@@ -181,7 +188,37 @@ config.skip_close_confirmation_for_processes_named = {
 config.command_palette_font_size = config.font_size
 config.command_palette_bg_color = colors.bg_d
 config.command_palette_fg_color = colors.fg
+config.inactive_pane_hsb = {
+	saturation = 0.9,
+	brightness = 1.0,
+}
 config.colors = {
+	cursor_bg = colors.green,
+	cursor_fg = colors.bg_d,
+	cursor_border = colors.green,
+
+	selection_fg = colors.fg,
+	selection_bg = colors.bg3,
+
+	-- Colors for copy_mode and quick_select
+	-- available since: 20220807-113146-c2fee766
+	-- In copy_mode, the color of the active text is:
+	-- 1. copy_mode_active_highlight_* if additional text was selected using the mouse
+	-- 2. selection_* otherwise
+	copy_mode_active_highlight_bg = { Color = '#000000' },
+	-- use `AnsiColor` to specify one of the ansi color palette values
+	-- (index 0-15) using one of the names "Black", "Maroon", "Green",
+	--  "Olive", "Navy", "Purple", "Teal", "Silver", "Grey", "Red", "Lime",
+	-- "Yellow", "Blue", "Fuchsia", "Aqua" or "White".
+	copy_mode_active_highlight_fg = { AnsiColor = 'Black' },
+	copy_mode_inactive_highlight_bg = { Color = '#52ad70' },
+	copy_mode_inactive_highlight_fg = { AnsiColor = 'White' },
+
+	quick_select_label_bg = { Color = 'peru' },
+	quick_select_label_fg = { Color = '#ffffff' },
+	quick_select_match_bg = { AnsiColor = 'Navy' },
+	quick_select_match_fg = { Color = '#ffffff' },
+
 	tab_bar = {
 		background = colors.bg_d,
 
@@ -226,59 +263,47 @@ config.colors = {
 	},
 }
 
--- config.window_padding = {
--- 	left = 2,
--- 	right = 2,
--- 	top = 2,
--- 	bottom = 2,
--- }
-
 config.launch_menu = {
 	{
 		label = 'Neovim Config',
 		args = { 'nvim' },
 		cwd = "C:\\Users\\Dilip Chauhan\\AppData\\Local\\nvim"
 	},
+	{
+		label = 'Edit host file',
+		args = { 'sudo', 'nvim', 'C:\\Windows\\System32\\drivers\\etc\\hosts' },
+		cwd = "C:\\Windows\\System32\\drivers\\etc"
+	},
 }
 
 config.ssh_backend = "Ssh2"
 config.ssh_domains = wezterm.default_ssh_domains()
 
--- config.ssh_domains = {
--- 	{
--- 		name = 'POD',
--- 		remote_address = '192.168.22.31',
--- 		ssh_option = {
--- 			identityfile = 'C:\\Users\\Dilip Chauhan\\.ssh\\id_rsa'
--- 		}
--- 	}
--- }
-
 config.keys = {
-	{ action = action.ActivateCommandPalette		, mods = 'CTRL|SHIFT', key =     'P' },
-	{ action = action.CopyTo    'Clipboard' 		, mods = 'CTRL|SHIFT', key =     'C' },
-	{ action = action.DecreaseFontSize      		, mods =       'CTRL', key =     '-' },
-	{ action = action.IncreaseFontSize      		, mods =       'CTRL', key =     '=' },
-	{ action = action.Nop                   		, mods =        'ALT', key = 'Enter' },
-	{ action = action.PasteFrom 'Clipboard' 		, mods = 'CTRL|SHIFT', key =     'V' },
-	{ action = action.ResetFontSize         		, mods =       'CTRL', key =     '0' },
-	{ action = action.ActivateCopyMode         	, mods = 'CTRL|SHIFT', key =     'X' },
-	{ action = action.TogglePaneZoomState         , mods = 'CTRL|SHIFT', key =     'Z' },
-	{ action = action.ToggleFullScreen      		,                      key =   'F11' },
-	{ action = action.SpawnTab "CurrentPaneDomain", mods = 'CTRL|SHIFT', key =	   'T' },
-	{ action = action.CloseCurrentTab{confirm=true}, mods = 'CTRL|SHIFT', key =	   'W' },
-	{ action = action.CloseCurrentPane{confirm=true}, mods = 'CTRL|SHIFT', key =	   'Q' },
-	{ action = action.ShowLauncher						, mods =			'CTRL|SHIFT', key =		'A' },
-	{ action = action.SplitHorizontal {domain="CurrentPaneDomain"}, mods = 'CTRL|SHIFT', key =	'|' },
-	{ action = action.SplitVertical {domain="CurrentPaneDomain"}, mods = 'CTRL|SHIFT', key =	'_' },
-	{ action = action.ActivateTabRelative(1)		, mods =			'CTRL', key = 'Tab' },
-	{ action = action.ActivateTabRelative(-1)		, mods =			'CTRL|SHIFT', key = 'Tab' },
-	{ action = action.QuickSelect						, mods =			'CTRL|SHIFT', key = 'Space' },
-	{ action = action.ActivateCommandPalette		, mods =			'CTRL|SHIFT', key = ':' },
-	{ action = action.AdjustPaneSize { 'Left', resize_step }	, mods =			'CTRL|ALT', key =		'h' },
-	{ action = action.AdjustPaneSize { 'Right', resize_step } , mods =		'CTRL|ALT', key =		'l' },
-	{ action = action.AdjustPaneSize { 'Down', resize_step }	, mods =			'CTRL|ALT', key =		'j' },
-	{ action = action.AdjustPaneSize { 'Up', resize_step }	, mods =			'CTRL|ALT', key =		'k' },
+	{ action = action.CopyTo    'Clipboard' 								, mods = 'CTRL|SHIFT', key =     'C' },
+	{ action = action.DecreaseFontSize      								, mods =       'CTRL', key =     '-' },
+	{ action = action.IncreaseFontSize      								, mods =       'CTRL', key =     '=' },
+	{ action = action.Nop                   								, mods =        'ALT', key = 'Enter' },
+	{ action = action.PasteFrom 'Clipboard' 								, mods = 'CTRL|SHIFT', key =     'V' },
+	{ action = action.ResetFontSize         								, mods =       'CTRL', key =     '0' },
+	{ action = action.ActivateCopyMode         							, mods = 'CTRL|SHIFT', key =     'X' },
+	{ action = action.TogglePaneZoomState        						, mods = 'CTRL|SHIFT', key =     'Z' },
+	{ action = action.ToggleFullScreen      								,                      key =   'F11' },
+	{ action = action.SpawnTab "CurrentPaneDomain"						, mods = 'CTRL|SHIFT', key =	   'T' },
+	{ action = action.CloseCurrentTab{confirm=true}						, mods = 'CTRL|SHIFT', key =	   'W' },
+	{ action = action.CloseCurrentPane{confirm=true}					, mods = 'CTRL|SHIFT', key =	   'Q' },
+	{ action = action.ShowLauncher											, mods =	'CTRL|SHIFT', key =		'A' },
+	{ action = action.SplitHorizontal {domain="CurrentPaneDomain"} , mods = 'CTRL|SHIFT', key =	   '|' },
+	{ action = action.SplitVertical {domain="CurrentPaneDomain"}	, mods = 'CTRL|SHIFT', key =		'_' },
+	{ action = action.ActivateTabRelative(1)								, mods =			'CTRL', key =	 'Tab' },
+	{ action = action.ActivateTabRelative(-1)								, mods =	'CTRL|SHIFT', key =   'Tab' },
+	{ action = action.QuickSelect												, mods =	'CTRL|SHIFT', key = 'Space' },
+	{ action = action.ActivateCommandPalette								, mods =	'CTRL|SHIFT', key =		':' },
+	{ action = action.AdjustPaneSize { 'Left', resize_step }			, mods =	  'CTRL|ALT', key =		'h' },
+	{ action = action.AdjustPaneSize { 'Right', resize_step } 		, mods =	  'CTRL|ALT', key =		'l' },
+	{ action = action.AdjustPaneSize { 'Down', resize_step }	 		, mods =	  'CTRL|ALT', key =		'j' },
+	{ action = action.AdjustPaneSize { 'Up', resize_step }	 		, mods =	  'CTRL|ALT', key =		'k' },
+	{ action = action.PaneSelect { mode = "Activate"}					, mods = 'CTRL|SHIFT', key =     's' },
 }
 
 for i = 1, 9 do
