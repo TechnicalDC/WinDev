@@ -11,4 +11,4 @@ My dev setup for windows
 - [Starship](https://starship.rs/): Cross platform shell prompt written in rust
 
 ## Screenshot
-![wezterm](https://github.com/TechnicalDC/WinDev/blob/main/images/2023-10-16_18-43.png)
+![wezterm](https://github.com/TechnicalDC/WinDev/blob/main/images/2024-04-09_16-32.png)
