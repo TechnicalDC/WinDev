@@ -1,5 +1,5 @@
 ---@diagnostic disable: unused-local
--- Pull in the wezterm API
+-- DEFINITIONS {{{
 local wezterm = require 'wezterm'
 local action = wezterm.action
 local mux = wezterm.mux
@@ -19,6 +19,21 @@ local direction_keys = {
    l = 'Right',
 }
 
+local home = wezterm.home_dir
+local workspaces = {
+   { id = home, label = 'Home ' },
+   { id = home .. '\\Desktop\\WORK', label = 'Work ' },
+   { id = home .. '\\AppData\\Local\\nvim', label = 'Neovim ' },
+}
+local launch_items = {
+   {
+      label = "Edit host file",
+      args = { "nvim", "C:\\Windows\\System32\\drivers\\etc\\hosts" }
+   },
+}
+-- }}}
+
+-- HELPER FUNCTIONS {{{
 -- if you are *NOT* lazy-loading smart-splits.nvim (recommended)
 local function is_vim(pane)
    -- this is set by the plugin, and unset on ExitPre in Neovim
@@ -95,7 +110,9 @@ wezterm.on( 'format-tab-title', function(tab, tabs, panes, config, hover, max_wi
    end
    return ' ' .. title .. ' '
 end)
+-- }}}
 
+-- TAB BAR THEME {{{
 wezterm.on('update-right-status', function(window, pane)
    local time = wezterm.strftime("%H:%M:%S")
    local stat = window:active_workspace()
@@ -141,15 +158,13 @@ wezterm.on('update-right-status', function(window, pane)
       { Text = " " },
       { Text = battery },
       { Text = " " },
-      -- { Foreground = { Color =Colors.bg_blue } },
-      -- { Background = { Color =Colors.black } },
-      { Attribute = { Italic = false } },
       { Text = '  ' .. time .. ' ' },
       "ResetAttributes",
    })
 end)
+-- }}}
 
--- This table will hold the configuration.
+-- CONFIG {{{
 local config = {}
 
 -- In newer versions of wezterm, use the config_builder which will
@@ -158,42 +173,40 @@ if wezterm.config_builder then
    config = wezterm.config_builder()
 end
 
-config.default_prog      = { 'powershell.exe' , '-NoLogo' }
-config.default_cwd       = 'C:\\Users\\Dilip Chauhan\\Desktop\\WORK\\'
-config.default_domain    = "local"
-config.default_workspace = "default"
-config.term              = "xterm"
-
-config.font                                       = wezterm.font "FantasqueSansMono Nerd Font"
--- config.font                                    = wezterm.font 'Iosevka NF'
-config.font_size                                  = 12
-config.default_cursor_style                       = 'SteadyBlock'
-config.line_height                                = 1.4
-config.colors                                     = theme
--- config.color_scheme                               = 'Monokai (base16)'
-config.scrollback_lines                           = 10000
-config.detect_password_input                      = true
-config.scroll_to_bottom_on_input                  = true
-config.show_update_window                         = true
-config.quote_dropped_files                        = "WindowsAlwaysQuoted"
-config.enable_tab_bar                             = true
-config.use_fancy_tab_bar                          = false
-config.hide_tab_bar_if_only_one_tab               = false
-config.prefer_to_spawn_tabs                       = true
-config.tab_bar_at_bottom                          = false
-config.tab_max_width                              = 30
-config.disable_default_key_bindings               = true
-config.disable_default_mouse_bindings             = false
-config.adjust_window_size_when_changing_font_size = false
-config.force_reverse_video_cursor                 = false
-config.hide_mouse_cursor_when_typing              = true
-config.window_close_confirmation                  = 'NeverPrompt'
-config.window_decorations                         = "RESIZE"
-config.show_tab_index_in_tab_bar                  = false
-config.switch_to_last_active_tab_when_closing_tab = true
-config.hyperlink_rules                            = wezterm.default_hyperlink_rules()
-config.pane_focus_follows_mouse                   = false
--- config.default_mux_server_domain = "local"
+config.default_prog                                = { 'powershell.exe' , '-NoLogo' }
+config.default_cwd                                 = 'C:\\Users\\Dilip Chauhan\\Desktop\\WORK\\'
+config.default_domain                              = "local"
+config.default_workspace                           = "default"
+config.term                                        = "xterm"
+config.font                                        = wezterm.font "FantasqueSansMono Nerd Font"
+-- config.font                                     = wezterm.font 'Iosevka NF'
+config.font_size                                   = 12
+config.default_cursor_style                        = 'SteadyBlock'
+config.line_height                                 = 1.4
+config.colors                                      = theme
+config.scrollback_lines                            = 10000
+config.detect_password_input                       = true
+config.scroll_to_bottom_on_input                   = true
+config.show_update_window                          = true
+config.quote_dropped_files                         = "WindowsAlwaysQuoted"
+config.enable_tab_bar                              = true
+config.use_fancy_tab_bar                           = false
+config.hide_tab_bar_if_only_one_tab                = false
+config.prefer_to_spawn_tabs                        = true
+config.tab_bar_at_bottom                           = false
+config.tab_max_width                               = 30
+config.disable_default_key_bindings                = true
+config.disable_default_mouse_bindings              = false
+config.adjust_window_size_when_changing_font_size  = false
+config.force_reverse_video_cursor                  = false
+config.hide_mouse_cursor_when_typing               = true
+config.window_close_confirmation                   = 'NeverPrompt'
+config.window_decorations                          = "RESIZE"
+config.show_tab_index_in_tab_bar                   = false
+config.switch_to_last_active_tab_when_closing_tab  = true
+config.hyperlink_rules                             = wezterm.default_hyperlink_rules()
+config.pane_focus_follows_mouse                    = false
+config.default_mux_server_domain                = "local"
 config.skip_close_confirmation_for_processes_named = {
    'bash',
    'sh',
@@ -210,8 +223,9 @@ config.skip_close_confirmation_for_processes_named = {
 -- config.window_background_image = "C:\\Users\\Dilip Chauhan\\Pictures\\onedark-wallpapers\\misc\\od_current_blurred.png"
 config.win32_system_backdrop     = 'Acrylic'
 config.command_palette_font_size = config.font_size
+config.char_select_font_size     = config.font_size
 config.inactive_pane_hsb         = {
-   saturation = 0.9,
+   saturation = 1.0,
    brightness = 1.0,
 }
 
@@ -221,11 +235,13 @@ config.window_padding = {
    top    = 20,
    bottom = 20,
 }
-
+config.launch_menu = launch_items
 -- config.ssh_backend = "Ssh2"
 config.ssh_backend = "LibSsh"
-config.ssh_domains = wezterm.default_ssh_domains()
+-- config.ssh_domains = wezterm.enumerate_ssh_hosts()
+-- }}}
 
+-- KEYBINDINGS {{{
 config.keys = {
    { action = action.CopyTo    'Clipboard' 								, mods = 'CTRL|SHIFT', key =     'C' },
    { action = action.DecreaseFontSize      								, mods =       'CTRL', key =     '-' },
@@ -235,19 +251,37 @@ config.keys = {
    { action = action.ResetFontSize         								, mods =       'CTRL', key =     '0' },
    { action = action.ActivateCopyMode         							, mods = 'CTRL|SHIFT', key =     'X' },
    { action = action.TogglePaneZoomState        						, mods = 'CTRL|SHIFT', key =     'Z' },
-   { action = action.ToggleFullScreen      								,                      key =   'F11' },
+   { action = action.ToggleFullScreen      								                     , key =   'F11' },
    { action = action.SpawnTab "CurrentPaneDomain"						, mods = 'CTRL|SHIFT', key =	   'T' },
-   { action = action.CloseCurrentTab{confirm=true}						, mods = 'CTRL|SHIFT', key =	   'W' },
    { action = action.CloseCurrentPane{confirm=true}					, mods = 'CTRL|SHIFT', key =	   'Q' },
-   { action = action.ShowLauncherArgs {flags="FUZZY|DOMAINS"}     , mods =	'CTRL|SHIFT', key =		'A' },
-   { action = action.ShowLauncherArgs {flags="FUZZY|COMMANDS"}    , mods =	'CTRL|SHIFT', key =		':' },
+   { action = action.ShowLauncherArgs {flags="FUZZY|DOMAINS", title = " Domains "}     , mods =	'CTRL|SHIFT', key =		'A' },
+   { action = action.ShowLauncherArgs {flags="FUZZY|WORKSPACES", title = " Workspace "}     , mods =	'CTRL|SHIFT', key =		'W' },
+   { action = action.ShowLauncherArgs {flags="FUZZY|LAUNCH_MENU_ITEMS", title = " Launcher "}     , mods =	'CTRL|SHIFT', key =		'?' },
+   { action = action.ShowLauncherArgs {flags="FUZZY|COMMANDS", title = " Commands "}   , mods =	'CTRL|SHIFT', key =		':' },
    { action = action.SplitHorizontal {domain="CurrentPaneDomain"} , mods = 'CTRL|SHIFT', key =	   '|' },
    { action = action.SplitVertical {domain="CurrentPaneDomain"}	, mods = 'CTRL|SHIFT', key =		'_' },
    { action = action.ActivateTabRelative(1)								, mods =			'CTRL', key =	 'Tab' },
    { action = action.ActivateTabRelative(-1)								, mods =	'CTRL|SHIFT', key =   'Tab' },
    { action = action.QuickSelect												, mods =	'CTRL|SHIFT', key = 'Space' },
-   -- { action = action.ShowTabNavigator      								, mods =			'CTRL', key =	   '/' },
    { action = action.PaneSelect { mode = "Activate"}					, mods = 'CTRL|SHIFT', key =     's' },
+   -- Unfortunatelly Yes, using F2 cause the same key used for renaming in Windows
+   { action = action.PromptInputLine {
+      description = 'Enter new name for current tab',
+      action = wezterm.action_callback(function(window, pane, line)
+         if line then
+            window:active_tab():set_title(" 󰑕  " .. line .. " ")
+         end
+      end),
+   }, mods = "CTRL", key = 'F2'},
+   { action = action.PromptInputLine {
+      description = 'Enter new name for current workspace',
+      action = wezterm.action_callback(function(window, pane, line)
+         if line then
+            mux.rename_workspace(wezterm.mux.get_active_workspace() , " " ..line .. " ")
+            print(line)
+         end
+      end),
+   }, mods = "CTRL|SHIFT", key = 'F2'},
    -- move between split panes
    split_nav('move', 'h'),
    split_nav('move', 'j'),
@@ -267,6 +301,7 @@ for i = 1, 9 do
       action = action.ActivateTab(i - 1)
    })
 end
+-- }}}
 
 -- and finally, return the configuration to wezterm
 return config
