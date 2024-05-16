@@ -51,7 +51,7 @@ return {
    scrollbar_thumb = '#222222',
 
    -- The color of the split lines between panes
-   split = colors.base02,
+   split = colors.base00,
 
    ansi = {
       colors.base00,
@@ -88,7 +88,7 @@ return {
    copy_mode_inactive_highlight_bg = { Color = '#52ad70' },
    copy_mode_inactive_highlight_fg = { AnsiColor = 'White' },
 
-   quick_select_label_bg = { Color = 'peru' },
+   quick_select_label_bg = { Color = 'red' },
    quick_select_label_fg = { Color = '#ffffff' },
    quick_select_match_bg = { AnsiColor = 'Navy' },
    quick_select_match_fg = { Color = '#ffffff' },
