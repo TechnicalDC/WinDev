@@ -96,19 +96,14 @@ wezterm.on( 'format-tab-title', function(tab, tabs, panes, config, hover, max_wi
       ssh = '󰒋 ',
       Debug = ' ',
       Launcher = ' ',
+      Default = ' ',
    }
    local title_name = tab_title(tab)
-   local title = ""
-   for i in string.gmatch(title_name, "%S+") do
-      title = i
-   end
 
-   if title:match("@") then
-      title = title_icon['ssh'] .. ' ' ..  title
-   else
-      title = title_icon[title] .. ' '  .. title
+   if string.len(title_name) >= 20  then
+      title_name = string.sub(title_name, 1, 20) .. '...'
    end
-   return ' ' .. title .. ' '
+   return '  ' .. title_name .. ' '
 end)
 -- }}}
 
@@ -163,7 +158,6 @@ wezterm.on('update-right-status', function(window, pane)
    })
 end)
 -- }}}
-
 -- CONFIG {{{
 local config = {}
 
