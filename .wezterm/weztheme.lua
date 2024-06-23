@@ -55,23 +55,23 @@ return {
 
    ansi = {
       colors.base00,
-      colors.base01,
-      colors.base02,
-      colors.base03,
-      colors.base04,
-      colors.base05,
-      colors.base06,
+      colors.base08,
+      colors.base0B,
+      colors.base0A,
+      colors.base0D,
+      colors.base0E,
+      colors.base0C,
       colors.base07,
    },
    brights = {
+      colors.base01,
       colors.base08,
-      colors.base09,
-      colors.base0A,
       colors.base0B,
-      colors.base0C,
+      colors.base0A,
       colors.base0D,
       colors.base0E,
-      colors.base0F,
+      colors.base0C,
+      colors.base07,
    },
 
    -- Colors for copy_mode and quick_select
@@ -106,7 +106,7 @@ return {
          -- Specify whether you want "Half", "Normal" or "Bold" intensity for the
          -- label shown for this tab.
          -- The default is "Normal"
-         intensity = 'Normal',
+         intensity = 'Bold',
 
          -- Specify whether you want "None", "Single" or "Double" underline for
          -- label shown for this tab.
@@ -115,7 +115,7 @@ return {
 
          -- Specify whether you want the text to be italic (true) or not (false)
          -- for this tab.  The default is false.
-         italic = false,
+         italic = true,
 
          -- Specify whether you want the text to be rendered with strikethrough (true)
          -- or not for this tab.  The default is false.
